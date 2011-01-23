@@ -83,13 +83,16 @@ module OFX
       end
 
       def build_balance
-        amount = html.search("ledgerbal > balamt").inner_text.to_f
+        amount_match = html.search("ledgerbal > balamt")
+        if amount_match.any?
+          amount = amount_str.inner_text.to_f
 
-        OFX::Balance.new({
-          :amount => amount,
-          :amount_in_pennies => (amount * 100).to_i,
-          :posted_at => build_date(html.search("ledgerbal > dtasof").inner_text)
-        })
+          OFX::Balance.new({
+            :amount => amount,
+            :amount_in_pennies => (amount * 100).to_i,
+            :posted_at => build_date(html.search("ledgerbal > dtasof").inner_text)
+          })
+        end
       end
     end
   end
